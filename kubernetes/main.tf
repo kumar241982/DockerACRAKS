@@ -1,31 +1,25 @@
 terraform {
   required_providers {
     azurerm = {
-      source = "hashicorp/azurerm"
+      source  = "hashicorp/azurerm"
       version = "4.47.0"
     }
   }
 }
 
 provider "azurerm" {
-    features {    
-    }
+  features {}
 
   client_id       = var.client_id
   client_secret   = var.client_secret
   tenant_id       = var.tenant_id
   subscription_id = var.subscription_id
-
- 
 }
 
 resource "azurerm_resource_group" "appgrp" {
   name     = "app-grp"
   location = "West Europe"
 }
-
-
-
 
 resource "azurerm_kubernetes_cluster" "aks1" {
   name                = "example-aks1"
@@ -46,5 +40,6 @@ resource "azurerm_kubernetes_cluster" "aks1" {
   tags = {
     Environment = "Production"
   }
-  depends_on = [ azurerm_resource_group.appgrp ]
+
+  depends_on = [azurerm_resource_group.appgrp]
 }
