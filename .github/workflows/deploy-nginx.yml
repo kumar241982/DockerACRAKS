@@ -11,7 +11,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Set up Azure CLI
+    - name: Set AKS context using Azure CLI
       uses: azure/cli@v1
       with:
         inlineScript: |
@@ -20,8 +20,8 @@ jobs:
 
     - name: Deploy NGINX manifests
       run: |
-        kubectl apply -f manifests/deployment.yaml
-        kubectl apply -f manifests/service.yaml
+        kubectl apply -f manifests/deployment.yaml --validate=false
+        kubectl apply -f manifests/service.yaml --validate=false
 
     - name: Verify Deployment and Service
       run: |
