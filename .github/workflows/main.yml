@@ -1,7 +1,7 @@
 name: Deploy AKS with Terraform
 
 on:
-  workflow_dispatch:  # 👈 Manual trigger from GitHub Actions tab
+  workflow_dispatch:  # Manual trigger
 
 jobs:
   terraform:
@@ -9,7 +9,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: kubernetes  # Folder containing main.tf
+        working-directory: kubernetes  # Folder containing .tf files
 
     steps:
     - name: Checkout repository
@@ -18,13 +18,18 @@ jobs:
     - name: Setup Terraform v1.13.3
       uses: hashicorp/setup-terraform@v2
       with:
-        terraform_version: 1.13.3  # 👈 Your specified version
+        terraform_version: 1.13.3
 
     - name: Terraform Init
       run: terraform init
 
     - name: Terraform Plan
       run: terraform plan -out main.tfplan
+      env:
+        ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
 
     - name: Terraform Apply
       run: terraform apply -auto-approve main.tfplan
