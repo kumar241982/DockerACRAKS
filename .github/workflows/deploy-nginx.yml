@@ -13,13 +13,17 @@ jobs:
 
     - name: Set up Azure CLI
       uses: azure/cli@v1
-
-    - name: Set AKS context
-      run: |
-        az login --service-principal -u ${{ secrets.ARM_CLIENT_ID }} -p ${{ secrets.ARM_CLIENT_SECRET }} --tenant ${{ secrets.ARM_TENANT_ID }}
-        az aks get-credentials --resource-group app-grp --name example-aks1 --overwrite-existing
+      with:
+        inlineScript: |
+          az login --service-principal -u ${{ secrets.ARM_CLIENT_ID }} -p ${{ secrets.ARM_CLIENT_SECRET }} --tenant ${{ secrets.ARM_TENANT_ID }}
+          az aks get-credentials --resource-group app-grp --name example-aks1 --overwrite-existing
 
     - name: Deploy NGINX manifests
       run: |
         kubectl apply -f manifests/deployment.yaml
         kubectl apply -f manifests/service.yaml
+
+    - name: Verify Deployment and Service
+      run: |
+        kubectl rollout status deployment/nginx-deployment
+        kubectl get svc nginx-service
