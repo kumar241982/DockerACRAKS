@@ -1,17 +1,12 @@
 terraform {
-  backend "azurerm" {
-    resource_group_name   = "tf-state-rgp"
-    storage_account_name  = "tfstate24019182"
-    container_name        = "tfstate"
-    key                   = "terraform.tfstate"
-  }
   required_providers {
     azurerm = {
-      source  = "hashicorp/azurerm"
+      source = "hashicorp/azurerm"
       version = "4.47.0"
     }
   }
 }
+
 
 provider "azurerm" {
     features {    
