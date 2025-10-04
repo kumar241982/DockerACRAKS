@@ -9,7 +9,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: kubernetes+acr  # Folder containing your .tf files
+        working-directory: kubernetes-acr  # Folder containing your .tf files
 
     steps:
     - name: Checkout repository
