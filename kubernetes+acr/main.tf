@@ -10,7 +10,10 @@ terraform {
 provider "azurerm" {
     features {    
     }
-
+  client_id       = var.client_id
+  client_secret   = var.client_secret
+  tenant_id       = var.tenant_id
+  subscription_id = var.subscription_id
  
 }
 
@@ -57,5 +60,5 @@ resource "azurerm_role_assignment" "kubeide67" {
   role_definition_name             = "AcrPull"
   scope                            = azurerm_container_registry.acr67.id
   skip_service_principal_aad_check = true
-
+  depends_on = [ azurerm_kubernetes_cluster.aks67,azurerm_container_registry.acr67 ]
 }
