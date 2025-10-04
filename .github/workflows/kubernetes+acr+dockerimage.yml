@@ -48,6 +48,14 @@ jobs:
     - name: Azure Container Registry Login
       run: az acr login --name containerRegistry67
 
+      
+    - name: List files for debug (root)
+      run: ls -l
+
+    - name: List files for debug (kubernetes+acr)
+      run: ls -l kubernetes+acr
+
+
     - name: Build and Push Docker Image
       run: |
         IMAGE_TAG=containerRegistry67.azurecr.io/myapp:$(date +%s)
