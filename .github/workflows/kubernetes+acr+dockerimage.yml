@@ -1,0 +1,55 @@
+name: Deploy AKS & ACR with Terraform and Push Docker Image
+
+on:
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  terraform-and-docker:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: kubernetes+acr  # Folder containing your .tf files
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform v1.13.3
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.13.3
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Plan
+      run: terraform plan -out main.tfplan
+      env:
+        TF_VAR_client_id: ${{ secrets.ARM_CLIENT_ID }}
+        TF_VAR_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
+        TF_VAR_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        TF_VAR_tenant_id: ${{ secrets.ARM_TENANT_ID }}
+
+    - name: Terraform Apply
+      run: terraform apply -auto-approve main.tfplan
+      env:
+        TF_VAR_client_id: ${{ secrets.ARM_CLIENT_ID }}
+        TF_VAR_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
+        TF_VAR_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        TF_VAR_tenant_id: ${{ secrets.ARM_TENANT_ID }}
+
+    # Build and push Docker image to ACR
+    - name: Azure CLI Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Azure Container Registry Login
+      run: az acr login --name containerRegistry67
+
+    - name: Build and Push Docker Image
+      run: |
+        IMAGE_TAG=containerRegistry67.azurecr.io/myapp:$(date +%s)
+        docker build -t $IMAGE_TAG .
+        docker push $IMAGE_TAG
