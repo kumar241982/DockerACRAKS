@@ -11,12 +11,14 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Set AKS context using Azure CLI
-      uses: azure/cli@v1
+    - name: Login to Azure
+      uses: azure/login@v1
       with:
-        inlineScript: |
-          az login --service-principal -u ${{ secrets.ARM_CLIENT_ID }} -p ${{ secrets.ARM_CLIENT_SECRET }} --tenant ${{ secrets.ARM_TENANT_ID }}
-          az aks get-credentials --resource-group app-grp --name example-aks1 --overwrite-existing
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Set AKS context
+      run: |
+        az aks get-credentials --resource-group app-grp --name example-aks1 --overwrite-existing
 
     - name: Deploy NGINX manifests
       run: |
